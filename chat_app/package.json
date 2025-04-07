@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "tools": "node -r ts-node/register --env-file=.env src/tools/index.ts",
-    "chat": "node -r ts-node/register --env-file=.env src/basic_chat/index.ts"
+    "chat": "node -r ts-node/register --env-file=.env src/basic_chat/index.ts",
+    "assistant": "node -r ts-node/register --env-file=.env src/project/FlightAssistant.ts"
   },
   "keywords": [],
   "author": "",

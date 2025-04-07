@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node -r ts-node/register  --env-file=.env  src/index.ts"
+    "chat": "node -r ts-node/register  --env-file=.env  src/index.ts",
+    "audio": "node -r ts-node/register  --env-file=.env  src/others/audio.ts",
+    "image": "node -r ts-node/register  --env-file=.env  src/others/images.ts"
   },
   "keywords": [],
   "author": "",
