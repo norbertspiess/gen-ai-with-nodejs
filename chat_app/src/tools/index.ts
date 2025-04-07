@@ -22,10 +22,10 @@ async function callOpenAIWithTools() {
             role: 'system',
             content: 'You are a helpful assistant that gives information about the time of day and order status'
         },
-        // {
-        //     role: 'user',
-        //     content: 'What is the time?'
-        // },
+        {
+            role: 'user',
+            content: 'What is the time?'
+        },
         {
             role: 'user',
             content: 'What is the status of order 1234?'
@@ -66,35 +66,33 @@ async function callOpenAIWithTools() {
     });
     // decide if tool call is required  
     const willInvokeFunction = response.choices[0].finish_reason === 'tool_calls'
-    const toolCall = response.choices[0].message.tool_calls![0]
-    
+
     if (willInvokeFunction) {
-        const toolName = toolCall.function.name
+        // push assistant response into the context, required by API
+        context.push(response.choices[0].message);
 
-        if (toolName == 'getTimeOfDay') {
-            const toolResponse = getTimeOfDay();
-            // push assistant response into the context, required by API
-            context.push(response.choices[0].message);
-            context.push({
-                role: 'tool',
-                content: toolResponse,
-                tool_call_id: toolCall.id
-            })
-        }
+        response.choices[0].message.tool_calls!.forEach(toolCall => {
+            const toolName = toolCall.function.name
 
-        if (toolName == 'getOrderStatus') {
-            // get registered arguments from the identified tool call
-            const rawArgument = toolCall.function.arguments;
-            const parsedArguments = JSON.parse(rawArgument);
-            const toolResponse = getOrderStatus(parsedArguments.orderId);
-            // push assistant response into the context, required by API
-            context.push(response.choices[0].message);
-            context.push({
-                role: 'tool',
-                content: toolResponse,
-                tool_call_id: toolCall.id
-            })
-        }
+            if (toolName == 'getTimeOfDay') {
+                context.push({
+                    role: 'tool',
+                    content: getTimeOfDay(),
+                    tool_call_id: toolCall.id
+                })
+            }
+
+            if (toolName == 'getOrderStatus') {
+                // get registered arguments from the identified tool call
+                const rawArgument = toolCall.function.arguments;
+                const parsedArguments = JSON.parse(rawArgument);
+                context.push({
+                    role: 'tool',
+                    content: getOrderStatus(parsedArguments.orderId),
+                    tool_call_id: toolCall.id
+                })
+            }
+        })
     }
 
     const secondResponse = await openAI.chat.completions.create({
@@ -109,7 +107,7 @@ async function callOpenAIWithTools() {
 callOpenAIWithTools();
 
 
-// configure the tools (first OpenAI call)
-// decide if tool call is required
-// invoke the tool
-// make a second openAI call with the tool response
+// 1. configure the tools (first OpenAI call)
+// 2. decide if tool call is required
+// 3. invoke the tool
+// 4. make a second openAI call with the tool responses
