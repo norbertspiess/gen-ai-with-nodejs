@@ -3,7 +3,8 @@ import OpenAI from "openai";
 const openAI = new OpenAI();
 
 function getTimeOfDay(){
-    return '5:45'
+    const now = new Date();
+    return `${now.getHours()}:${now.getMinutes()}`;
 }
 
 function getOrderStatus(orderId: string){
@@ -21,9 +22,13 @@ async function callOpenAIWithTools() {
             role: 'system',
             content: 'You are a helpful assistant that gives information about the time of day and order status'
         },
+        // {
+        //     role: 'user',
+        //     content: 'What is the time?'
+        // },
         {
             role: 'user',
-            content: 'What is the status of order 1235?'
+            content: 'What is the status of order 1234?'
         }
     ]
 
@@ -60,7 +65,7 @@ async function callOpenAIWithTools() {
         tool_choice: 'auto'// the engine will decide which tool to use
     });
     // decide if tool call is required  
-    const willInvokeFunction = response.choices[0].finish_reason == 'tool_calls'
+    const willInvokeFunction = response.choices[0].finish_reason === 'tool_calls'
     const toolCall = response.choices[0].message.tool_calls![0]
     
     if (willInvokeFunction) {
@@ -68,6 +73,7 @@ async function callOpenAIWithTools() {
 
         if (toolName == 'getTimeOfDay') {
             const toolResponse = getTimeOfDay();
+            // push assistant response into the context, required by API
             context.push(response.choices[0].message);
             context.push({
                 role: 'tool',
@@ -77,9 +83,11 @@ async function callOpenAIWithTools() {
         }
 
         if (toolName == 'getOrderStatus') {
+            // get registered arguments from the identified tool call
             const rawArgument = toolCall.function.arguments;
             const parsedArguments = JSON.parse(rawArgument);
             const toolResponse = getOrderStatus(parsedArguments.orderId);
+            // push assistant response into the context, required by API
             context.push(response.choices[0].message);
             context.push({
                 role: 'tool',
@@ -93,14 +101,15 @@ async function callOpenAIWithTools() {
         model: 'gpt-4o-mini',
         messages: context
     })
-    console.log(secondResponse.choices[0].message.content)
+    const choice = secondResponse.choices[0];
+    console.log(choice.message.content)
 
 }
 
 callOpenAIWithTools();
 
 
-
+// configure the tools (first OpenAI call)
 // decide if tool call is required
 // invoke the tool
 // make a second openAI call with the tool response
