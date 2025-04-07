@@ -6,7 +6,8 @@ const encoder = encoding_for_model('gpt-4o-mini');
 
 const MAX_TOKENS = 700;
 
-const context:OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [{
+// collect all request and response messages for chat history
+const context: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [{
     role: 'system',
     content: 'You are a helpful chatbot'
 }]
@@ -17,9 +18,10 @@ async function createChatCompletion() {
         messages: context
     })
     const responseMessage = response.choices[0].message;
+    // push response to context/history of chat to keep questions and answers
     context.push(responseMessage)
 
-    if (response.usage && response.usage.total_tokens > MAX_TOKENS) {
+    if (response.usage && response.usage?.total_tokens > MAX_TOKENS) {
         deleteOlderMessages();
     }
 
@@ -35,6 +37,8 @@ process.stdin.addListener('data', async function (input) {
     await createChatCompletion();
 })
 
+// keep chat context small out of financial reasons and avoid Open AI thresholds/limits
+// https://platform.openai.com/docs/models/gpt-4o-mini
 function deleteOlderMessages(){
     let contextLength = getContextLength();
     while (contextLength > MAX_TOKENS) {
