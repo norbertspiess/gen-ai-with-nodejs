@@ -12,6 +12,7 @@ async function generateFreeImage() {
         quality: 'standard',
         n: 1
     });
+    // response contains link, not the actual data
     console.log(response)    
 }
 
@@ -23,6 +24,7 @@ async function generateFreeLocalImage() {
         size: '256x256',
         quality: 'standard',
         n: 1,
+        // return actual image data
         response_format: 'b64_json'
     });
     const rawImage = response.data[0].b64_json;
@@ -60,7 +62,9 @@ async function generateImageVariation(){
 
 async function editImage(){
     const response = await openai.images.edit({
+        // base image
         image: createReadStream('city.png'),
+        // showcasing what part to edit
         mask:createReadStream('cityMask.png'),
         prompt: 'add thunderstorm to the city',
         model: 'dall-e-2',
