@@ -59,7 +59,7 @@ async function textToImage() {
     });
 
     const buffer = Buffer.from(await result.arrayBuffer());
-    writeFile('image.png', buffer, ()=>{
+    writeFile('image.png', new Uint8Array(buffer), ()=>{
         console.log('image saved')
     })
 

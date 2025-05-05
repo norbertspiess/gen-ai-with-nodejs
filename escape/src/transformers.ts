@@ -34,7 +34,7 @@ async function speechRecognition() {
     let url = 'https://huggingface.co/datasets/Xenova/transformers.js-docs/resolve/main/jfk.wav';
     let buffer = Buffer.from(await fetch(url).then(x => x.arrayBuffer()))
 
-    let wav = new wavefile.WaveFile(buffer);
+    let wav = new wavefile.WaveFile(new Uint8Array(buffer));
     wav.toBitDepth('32f'); // Pipeline expects input as a Float32Array
     wav.toSampleRate(16000); // Whisper expects audio with a sampling rate of 16000
 
@@ -58,4 +58,7 @@ async function speechRecognition() {
     console.log(result);
 }
 
-speechRecognition();
+// test()
+// embedder();
+// generateText()
+// speechRecognition()
