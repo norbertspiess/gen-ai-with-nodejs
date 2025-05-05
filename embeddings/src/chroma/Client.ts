@@ -10,10 +10,11 @@ const embeddingFunction = new OpenAIEmbeddingFunction({
 })
 
 async function main(){
-    const response = await client.createCollection({
-        name: 'data-test2'
-    })
-    console.log(response)
+    // const response = await client.createCollection({
+    //     name: 'data-test2'
+    // })
+    // console.log(response)
+    await addData()
 }
 
 async function addData() {
@@ -27,3 +28,5 @@ async function addData() {
     })
     console.log(result)
 }
+
+main()

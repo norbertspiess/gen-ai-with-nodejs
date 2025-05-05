@@ -1,5 +1,6 @@
 import { ChromaClient, OpenAIEmbeddingFunction } from "chromadb";
 import OpenAI from "openai";
+
 const chroma = new ChromaClient({ path: "http://localhost:8000" });
 
 const studentInfo = `Alexandra Thompson, a 19-year-old computer science sophomore with a 3.7 GPA,
@@ -29,11 +30,10 @@ async function createCollection() {
 }
 
 async function getCollection() {
-    const collection = await chroma.getCollection({
+    return await chroma.getCollection({
         name: collectionName,
-        embeddingFunction
+        // embeddingFunction
     });
-    return collection;
 }
 
 async function populateCollection() {
@@ -41,6 +41,7 @@ async function populateCollection() {
     await collection.add({
         documents: [studentInfo, clubInfo, universityInfo],
         ids: ['id1', 'id2', 'id3'],
+        embeddings: []
     })
 }
 
@@ -72,6 +73,8 @@ async function askQuestion() {
 }
 
 async function main() {
+    await createCollection();
+    await populateCollection();
     await askQuestion();
 
 }

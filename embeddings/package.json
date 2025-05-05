@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node -r ts-node/register --env-file=.env src/emb/main.ts"
+    "start": "node -r ts-node/register --env-file=.env src/emb/main.ts",
+    "start:chroma": "node -r ts-node/register --env-file=.env src/chroma/Client.ts"
   },
   "keywords": [],
   "author": "",
@@ -16,7 +17,7 @@
   },
   "dependencies": {
     "@pinecone-database/pinecone": "^4.0.0",
-    "chromadb": "^1.9.2",
+    "chromadb": "^2.3.0",
     "openai": "^4.71.1"
   }
 }
